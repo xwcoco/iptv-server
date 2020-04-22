@@ -1,0 +1,37 @@
+{
+  "name": "iptvserver",
+  "version": "1.0.0",
+  "description": "iptv server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/index.js"
+  },
+  "keywords": [
+    "iptv"
+  ],
+  "nodemonConfig": {
+    "ignore": [
+      "node_modules/*"
+    ],
+    "delay": "1000",
+    "verbose": true
+  },
+  "author": "xuwei",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.1.0",
+    "crypto-js": "^4.0.0",
+    "http-proxy-middleware": "^0.20.0",
+    "js-base64": "^2.5.2",
+    "koa": "^2.8.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-json": "^2.0.2",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "log4js": "^5.1.0",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.3.0",
+    "pako": "^1.0.11"
+  }
+}

@@ -1,0 +1,37 @@
+var mysql = require('mysql');
+
+class MysqlDao {
+    constructor() {
+        let con = mysql.createConnection({
+            host: "192.168.0.69",
+            user: "luotu",
+            password: "JBX87HetLC64RGYG",
+            database: "luotu"
+        });
+
+        con.connect(function(err) {
+            if (err) throw err;
+            console.log("Connected!");
+        });
+
+        this.conn = con;
+    }
+
+    query(sql,params = []) {
+        return new Promise((resolve, reject) => {
+            this.conn.query(sql, params, (err, result,fields) => {
+                if (err) {
+                    console.log('Error running sql: ' + sql)
+                    console.log(err)
+                    reject(err)
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+
+    }
+
+}
+
+module.exports = MysqlDao;
