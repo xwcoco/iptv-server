@@ -1,11 +1,18 @@
 let MysqlDao = require("./mysqldao");
 let Utils = require("./Utils");
+const NodeCache = require( "node-cache" );
 
 class Config {
     constructor() {
         this.ado = new MysqlDao();
 
         this._sig = "";
+
+        this.myCache = new NodeCache({stdTTL: 0,checkperiod:0});
+    }
+
+    get cache() {
+        return this.myCache;
     }
 
     async getConfig(name) {

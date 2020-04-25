@@ -2,6 +2,7 @@ const router = require('koa-router')();
 var log4js = require('log4js');
 const MysqlAdo = require("../mysqldao");
 var request = require('request-promise');
+const IptvConfig = require('../config');
 
 var logger = log4js.getLogger();
 logger.level = 'debug';
@@ -9,6 +10,29 @@ logger.level = 'debug';
 router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
     logger.debug(ctx.request.query);
     let params = ctx.request.query;
+
+
+    let cache = IptvConfig.cache;
+
+    let cdate = cache.get('cachetime');
+
+    let date = new Date();
+    let ndate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),0,0,0,0);
+    ndate.setDate(ndate.getDate() + 1);
+    if (cdate === undefined) {
+        cache.set('cachetime',ndate);
+    } else {
+        if (date >= cdate) {
+            cache.flushAll();
+            cache.set('cachetime',ndate);
+        }
+    }
+
+    let item = cache.get(params.id);
+    if (item !== undefined) {
+        return;
+    }
+
     let ado = new MysqlAdo();
     let sql = "select * from chzb_epg where status = 1 and content like '%"+params.id+"%'";
     let db = await ado.query(sql);
