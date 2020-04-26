@@ -3,6 +3,9 @@ var log4js = require('log4js');
 const MysqlAdo = require("../mysqldao");
 var request = require('request-promise');
 const IptvConfig = require('../config');
+const xml2js = require('xml2js');
+let EpgFetch = require('../epgfetch');
+const zlib = require('zlib');
 
 var logger = log4js.getLogger();
 logger.level = 'debug';
@@ -30,6 +33,7 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
 
     let item = cache.get(params.id);
     if (item !== undefined) {
+        ctx.body = item;
         return;
     }
 
@@ -56,8 +60,8 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
         for (let j = 0; j < plist.length; j++) {
             if (plist[j].pname === params.id) {
                 epgid = db[i].id;
-                epgname = db[i].name;
-                epgcontent = content;
+                epgname = db[i].name.trim();
+                epgcontent = content.trim();
                 break;
             }
         }
@@ -73,9 +77,73 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
         return true;
     }
 
-    ctx.body = {
-        db : db,
-    };
+    let epgParams = undefined;
+
+    if (epgname.startsWith('51zmt-')) {
+        let xmlfile = 'e.xml';
+
+        let epgname1 = epgname.substr(6);
+        console.log(epgname1);
+
+        let pos = epgname1.indexOf('-');
+        if (pos !== -1) {
+            let tmp = epgname1.substr(0,pos);
+            console.log(tmp);
+            xmlfile = tmp+'.xml';
+        }
+
+        let xml51 = cache.get('xml51cache_'+xmlfile);
+        if (xml51 === undefined) {
+            request('http://epg.51zmt.top:8000/'+xmlfile)
+                .then(function (htmlString) {
+                    let parser = new xml2js.Parser(/* options */);
+                    parser.parseStringPromise(htmlString)
+                        .then(function (result) {
+                            // console.dir(result);
+                            cache.set('xml51cache_'+xmlfile,result.tv.programme);
+                            console.log('Done');
+                        })
+                        .catch(function (err) {
+                            // Failed
+                            console.log(err);
+                        });
+                    // cache.set('xml51cache',xml51);
+                    console.log("read 51zmt ok");
+                })
+                .catch(function (err) {
+                    console.log(err);
+                    ctx.body = {
+                        code : 500,
+                        msg: "51zmt数据读取错误!",
+                    };
+                    return true;
+                });
+            ctx.body = {
+                code : 500,
+                msg : "正在读取51zmt数据,下次再试",
+            };
+            return true;
+        }
+        epgParams = {
+            xml : xml51,
+        }
+    }
+
+    let fetch = new EpgFetch(epgid,epgname,epgcontent,params.id, epgParams);
+
+    let epg = await fetch.getEPG();
+    if (epg !== undefined) {
+        ctx.body = epg;
+        cache.set(params.id,epg);
+    }
+    else {
+        ctx.body = {
+            code : 500,
+            msg : '未获取数据',
+        };
+
+    }
+
     return true;
     // ctx.body = 'demo'
 });
