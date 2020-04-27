@@ -6,20 +6,20 @@ var logger = log4js.getLogger();
 logger.level = 'debug';
 
 router.post('/', async function (ctx, next) {
-    logger.debug(ctx.request.query);
+    logger.debug(ctx.request);
 
     let obj = {
         "status": 999,
-        "dataurl": "http://192.168.2.11:8080/data.php",
+        "dataurl": "http://"+ctx.request.header.host+"/data.php",
         "appurl": "http://127.0.0.1/1.apk",
         "dataver": "2",
         "appver": "1.0",
         "setver": "1",
-        "adtext": "4月21号星期二，北京，9℃晴，气温:4℃～15℃，西北风4级，相对湿度:15%，空气质量:优，空气很好，可以外出活动，呼吸新鲜空气，拥抱大自然！欢迎使用IPTV高清播放系统",
+        "adtext": "欢迎使用IPTV高清播放系统",
         "showinterval": "5",
         "categoryCount": 0,
         "exp": -1005,
-        "ip": "192.168.0.32",
+        "ip": "192.168.50.8",
         "showtime": "120",
         "id": "49729",
         "decoder": "1",
