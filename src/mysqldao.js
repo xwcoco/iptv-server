@@ -3,10 +3,10 @@ var mysql = require('mysql');
 class MysqlDao {
     constructor() {
         let con = mysql.createConnection({
-            host: "192.168.0.69",
-            user: "luotu",
-            password: "JBX87HetLC64RGYG",
-            database: "luotu"
+            host: "192.168.50.8",
+            user: "homeiptv",
+            password: "DcKchfC4rSb5MYHd",
+            database: "homeiptv"
         });
 
         con.connect(function(err) {

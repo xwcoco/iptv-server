@@ -242,9 +242,11 @@ router.get('/getalllist',async function (ctx,next) {
     return true;
 });
 
-router.get('/saveepgitem',async function (ctx,next) {
-    let params = ctx.request.query;
+router.post('/saveepgitem',async function (ctx,next) {
+    let params = ctx.request.body.params;
+    console.log(params);
     let id = parseInt(params.id);
+    console.log(id);
     let ado = new MysqlAdo();
     let name = params.source.trim() + '-' + params.name.trim();
     if (id === -1) {
