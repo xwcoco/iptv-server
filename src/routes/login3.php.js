@@ -15,7 +15,7 @@ router.post('/', async function (ctx, next) {
         "dataver": "2",
         "appver": "1.0",
         "setver": "1",
-        "adtext": "欢迎使用IPTV高清播放系统",
+        "adtext": "",
         "showinterval": "5",
         "categoryCount": 0,
         "exp": -1005,
