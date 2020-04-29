@@ -19,6 +19,13 @@ let reverse = function (s) {
     return s.split("").reverse().join("");
 };
 
+let findNameIndex = function(nameArray,name) {
+    for (let i = 0; i < nameArray.length; i++) {
+        if (nameArray[i].name === name) return i;
+    }
+    return -1;
+};
+
 let channelNumber = 1;
 
 let getCategoryData = async function (dao, category, alisname, psw) {
@@ -29,7 +36,7 @@ let getCategoryData = async function (dao, category, alisname, psw) {
     if (db instanceof Array) {
         for (let i = 0; i < db.length; i++) {
             let rec = db[i];
-            let index = nameArray.indexOf(rec.name);
+            let index = findNameIndex(nameArray,rec.name);
             if (index === -1) {
                 nameArray.push({
                     name: rec.name,
@@ -61,6 +68,7 @@ let getCategoryData = async function (dao, category, alisname, psw) {
 
 router.post('/', async function (ctx, next) {
     let params = ctx.request.body
+    console.log(params);
     logger.debug(params.data);
 
     params = JSON.parse(params.data.toString());
@@ -95,6 +103,12 @@ router.post('/', async function (ctx, next) {
     }
 
     let str = Utils.gzcompress(JSON.stringify(contents));
+
+    if (params.rand === "") {
+        // ctx.body = Utils.gzcompress("dfsoft123456789");
+        ctx.body = str;
+        return true;
+    }
 
     sql = "select dataver from chzb_appdata";
 
