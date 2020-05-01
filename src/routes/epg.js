@@ -10,6 +10,8 @@ const zlib = require('zlib');
 var logger = log4js.getLogger();
 logger.level = 'debug';
 
+
+
 router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
     logger.debug(ctx.request.query);
     let params = ctx.request.query;
@@ -52,6 +54,7 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
     let epgid = -1;
     let epgname = "";
     let epgcontent = "";
+    let epgSourceList = [];
     for (let i = 0; i < db.length; i++) {
         let content = db[i].content;
         let plist = JSON.parse(content);
@@ -59,15 +62,30 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
             continue;
         for (let j = 0; j < plist.length; j++) {
             if (plist[j].pname === params.id) {
-                epgid = db[i].id;
-                epgname = db[i].name.trim();
-                epgcontent = content.trim();
-                break;
+                epgSourceList.push({
+                    epgid : db[i].id,
+                    epgname : db[i].name.trim(),
+                    epgcontent : content.trim(),
+                })
             }
         }
-        if (epgid !== -1)
-            break;
     }
+
+    for (let i = 0; i < epgSourceList.length; i++) {
+        let tmpid = epgSourceList[i].epgid;
+        let errornum = IptvConfig.getEPGErrorNum(tmpid);
+        if (errornum >= 3)
+            continue;
+        epgid = epgSourceList[i].epgid;
+        epgname = epgSourceList[i].epgname;
+        epgcontent = epgSourceList[i].epgcontent;
+        break;
+    }
+    // if (epgSourceList.length > 0) {
+    //     epgid = epgSourceList[0].epgid;
+    //     epgname = epgSourceList[0].epgname;
+    //     epg
+    // }
 
     if (epgid === -1) {
         ctx.body = {
@@ -83,12 +101,10 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
         let xmlfile = 'e.xml';
 
         let epgname1 = epgname.substr(6);
-        console.log(epgname1);
 
         let pos = epgname1.indexOf('-');
         if (pos !== -1) {
             let tmp = epgname1.substr(0,pos);
-            console.log(tmp);
             xmlfile = tmp+'.xml';
         }
 
@@ -105,6 +121,7 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
                         })
                         .catch(function (err) {
                             // Failed
+                            IptvConfig.incEPGError(epgid);
                             console.log(err);
                         });
                     // cache.set('xml51cache',xml51);
@@ -112,6 +129,7 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
                 })
                 .catch(function (err) {
                     console.log(err);
+                    IptvConfig.incEPGError(epgid);
                     ctx.body = {
                         code : 500,
                         msg: "51zmt数据读取错误!",
@@ -141,7 +159,7 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
             code : 500,
             msg : '未获取数据',
         };
-
+        IptvConfig.incEPGError(epgid);
     }
 
     return true;
