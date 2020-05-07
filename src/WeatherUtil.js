@@ -1,6 +1,45 @@
 const IptvConfig = require('./config');
+const request = require('request-promise');
+const zlib = require('zlib');
+const stream = require('stream');
+const xml2js = require('xml2js');
 
 class WeatherUtil {
+
+    static doGetWeatherData(cache) {
+        let data = "";
+        let gunzip = zlib.createGunzip();
+
+        // let cache = IptvConfig.cache;
+
+        let echoStream = new stream.Writable();
+        echoStream._write = function (chunk, encoding, done) {
+            data = chunk.toString();
+            // console.log(data);
+            let parser = new xml2js.Parser(/* options */);
+            parser.parseStringPromise(data)
+                .then(function (result) {
+                    let tmpData = WeatherUtil.getWeatherInfo(result);
+                    cache.set('weatherdata_tq', tmpData);
+                    WeatherUtil.GetAllWeatherData(cache);
+                    console.log('Weather Done');
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        };
+
+        request('http://wthrcdn.etouch.cn/WeatherApi?citykey=101180101').pipe(gunzip).pipe(echoStream);
+
+        request('https://free-api.heweather.net/s6/air/now?location=zhengzhou&key=70decfbc6d084d0b9e0d30f33dc54135').then(function (htmlString) {
+            // console.log(htmlString);
+            let json = JSON.parse(htmlString);
+            cache.set('weatherdata_aqi', json);
+            WeatherUtil.GetAllWeatherData(cache);
+        })
+
+    }
+
     static getWeatherInfo(weather) {
         let ret = {};
         ret.city = weather.resp.city[0];
@@ -34,15 +73,12 @@ class WeatherUtil {
         return ret;
     }
 
-    static GetAllWeatherData() {
-        let cache = IptvConfig.cache;
+    static GetAllWeatherData(cache) {
+        // let cache = IptvConfig.cache;
         let tq = cache.get("weatherdata_tq");
         if (tq === undefined) return;
         let aqi = cache.get("weatherdata_aqi");
         if (aqi === undefined) return;
-
-
-
 
         tq.aqi = aqi.HeWeather6[0].air_now_city.aqi;
         tq.qlty = aqi.HeWeather6[0].air_now_city.qlty;

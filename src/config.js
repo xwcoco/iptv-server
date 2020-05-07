@@ -1,7 +1,8 @@
 let MysqlDao = require("./mysqldao");
 let Utils = require("./Utils");
 const NodeCache = require( "node-cache" );
-
+const schedule = require('node-schedule');
+let WeatherUtil = require('./WeatherUtil');
 
 class Config {
     constructor() {
@@ -10,10 +11,21 @@ class Config {
         this._sig = "";
 
         this.myCache = new NodeCache({stdTTL: 0,checkperiod:0});
+
+        this.doGetWeatherSchedule();
     }
 
     get cache() {
         return this.myCache;
+    }
+
+    doGetWeatherSchedule() {
+        let that = this;
+        WeatherUtil.doGetWeatherData(that.myCache);
+        schedule.scheduleJob('1 */2 * * *',()=>{
+            console.log('doGetWeatherSchedule:' + new Date());
+            WeatherUtil.doGetWeatherData(that.myCache);
+        });
     }
 
     async getConfig(name) {
@@ -73,7 +85,7 @@ let IptvConfig = new Config();
 IptvConfig.initConfig();
 
 Date.prototype.Format = function (fmt) { //author: meizz
-    var o = {
+    const o = {
         "M+": this.getMonth() + 1, //月份
         "d+": this.getDate(), //日
         "h+": this.getHours(), //小时
@@ -83,7 +95,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
         "S": this.getMilliseconds() //毫秒
     };
     if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (var k in o)
+    for (const k in o)
         if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
 };

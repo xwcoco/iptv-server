@@ -129,6 +129,31 @@ router.get('/geticon', async function (ctx, next) {
     return true;
 });
 
+router.get('/getnameicon', async function (ctx, next) {
+    let params = ctx.request.query;
+    console.log(params);
+
+    let name = params.name;
+
+    let ado = new MysqlDao();
+    let sql = "select * from chzb_icon where name = ?";
+    let db = await ado.query(sql,[name]);
+
+    if (db instanceof Array && db.length > 0) {
+        ctx.body = {
+            code: 200,
+            data: "/icons/"+db[0].icon,
+        }
+    }
+    else {
+        ctx.body = {
+            code: 500,
+            data: "",
+        }
+    }
+    return true;
+});
+
 router.get('/delete', async function (ctx, next) {
     let params = ctx.request.query;
     let id = parseInt(params.id);
