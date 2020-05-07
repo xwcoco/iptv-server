@@ -2,6 +2,7 @@ let MysqlDao = require("./mysqldao");
 let Utils = require("./Utils");
 const NodeCache = require( "node-cache" );
 
+
 class Config {
     constructor() {
         this.ado = new MysqlDao();
