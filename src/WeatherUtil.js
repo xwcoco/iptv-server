@@ -58,7 +58,7 @@ class WeatherUtil {
         ret.night_type = weather.resp.forecast[0].weather[0].night[0].type[0];
 
         ret.day_icon = WeatherUtil.getWeatherIcon(ret.day_type);
-        ret.night_icon = WeatherUtil.getWeatherIcon(ret.night_icon);
+        ret.night_icon = WeatherUtil.getWeatherIcon(ret.night_type);
 
         tmp = weather.resp.forecast[0].weather[1].high[0];
         ret.nextday_high = tmp.substr(3);
@@ -90,6 +90,7 @@ class WeatherUtil {
     }
 
     static getWeatherIcon(type) {
+        console.log(type);
         let code = "01"
         switch (type) {
             case "晴":
@@ -205,6 +206,7 @@ class WeatherUtil {
                 code = "01"
         }
         let name = "white_"+code+'.png'
+        console.log("code = "+ code);
         return "/weathericon/"+name;
     }
 }
