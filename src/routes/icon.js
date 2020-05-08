@@ -168,4 +168,37 @@ router.get('/delete', async function (ctx, next) {
     return true;
 });
 
+router.post('/save', async function (ctx, next) {
+    let params = ctx.request.body
+    console.log(params);
+
+    let name = params.name;
+    let icon = params.icon;
+
+    let ado = new MysqlDao();
+    let sql = "select id from chzb_icon where name=?";
+    let db = await ado.query(sql,[name]);
+
+    let find = false;
+    let msg = "";
+
+    console.log(db);
+    if (db instanceof Array && db.length > 0) {
+        console.log("find icon record where name = "+name);
+        let id = db[0].id;
+        sql = "update chzb_icon set name = ?,icon = ? where id = ?";
+        await ado.query(sql,[name,icon,id]);
+        msg = "更新 "+ name + " 完成"
+    } else {
+        sql = "insert into chzb_icon values (null,?,?)";
+        await ado.query(sql,[name,icon]);
+        msg = "新增 "+ name + " 完成"
+    }
+    ctx.body = {
+        success : true,
+        msg : msg,
+    }
+    return true;
+});
+
 module.exports = router;
