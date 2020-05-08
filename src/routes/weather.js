@@ -7,7 +7,7 @@ const IptvConfig = require('../config');
 let WeatherUtil = require('../WeatherUtil');
 
 router.get('/', async function (ctx, next) {
-    logger.debug(ctx.request.query);
+    logger.debug("get weather : ");
 
     let cache = IptvConfig.cache;
 
