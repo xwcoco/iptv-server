@@ -29,14 +29,21 @@ class WeatherUtil {
                 });
         };
 
-        request('http://wthrcdn.etouch.cn/WeatherApi?citykey=101180101').pipe(gunzip).pipe(echoStream);
+        try {
+            request('http://wthrcdn.etouch.cn/WeatherApi?citykey=101180101').pipe(gunzip).pipe(echoStream);
 
-        request('https://free-api.heweather.net/s6/air/now?location=zhengzhou&key=70decfbc6d084d0b9e0d30f33dc54135').then(function (htmlString) {
-            // console.log(htmlString);
-            let json = JSON.parse(htmlString);
-            cache.set('weatherdata_aqi', json);
-            WeatherUtil.GetAllWeatherData(cache);
-        })
+            request('https://free-api.heweather.net/s6/air/now?location=zhengzhou&key=70decfbc6d084d0b9e0d30f33dc54135').then(function (htmlString) {
+                // console.log(htmlString);
+                let json = JSON.parse(htmlString);
+                cache.set('weatherdata_aqi', json);
+                WeatherUtil.GetAllWeatherData(cache);
+            })
+        }
+        catch (e) {
+            console.log(e);
+        }
+
+
 
     }
 
