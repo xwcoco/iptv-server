@@ -40,7 +40,7 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
     }
 
     let ado = new MysqlAdo();
-    let sql = "select * from chzb_epg where status = 1 and content like '%"+params.id+"%'";
+    let sql = "select * from chzb_epg where status = 1 and content like '%"+params.id+"%' order by id";
     let db = await ado.query(sql);
 
 
@@ -71,10 +71,15 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
         }
     }
 
+    let totalMaxNum = 1;
+
     for (let i = 0; i < epgSourceList.length; i++) {
         let tmpid = epgSourceList[i].epgid;
         let errornum = IptvConfig.getEPGErrorNum(tmpid);
-        if (errornum >= 3)
+        if (errornum >= totalMaxNum)
+            continue;
+        errornum = IptvConfig.getChannelEPGErrorNum(params.id,tmpid);
+        if (errornum >= totalMaxNum)
             continue;
         epgid = epgSourceList[i].epgid;
         epgname = epgSourceList[i].epgname;
@@ -151,6 +156,16 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
 
     let epg = await fetch.getEPG();
     if (epg !== undefined) {
+
+        if (epg.data.length === 0) {
+            IptvConfig.incChannelEPGError(params.id,epgid);
+            ctx.body = {
+                code : 500,
+                msg : '未获取数据',
+            };
+            return true;
+        }
+
         ctx.body = epg;
         cache.set(params.id,epg);
     }

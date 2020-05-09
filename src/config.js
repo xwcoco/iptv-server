@@ -47,6 +47,25 @@ class Config {
         return 0;
     }
 
+    getChannelEPGErrorNum(channelName,epgid) {
+        let errorid = "epg_error_"+channelName+"_" +epgid;
+        let tmpcache = this.myCache.get(errorid);
+        if (tmpcache !== undefined)
+            return tmpcache;
+        return 0;
+    }
+
+    incChannelEPGError(channelName,epgid) {
+        let errorid = "epg_error_"+channelName+"_" +epgid;
+        let tmpcache = this.myCache.get(errorid);
+        if (tmpcache !== undefined) {
+            tmpcache = tmpcache + 1;
+            this.myCache.set(errorid,tmpcache);
+            return;
+        }
+        this.myCache.set(errorid,1);
+    }
+
     incEPGError(epgid) {
         let errorid = "epg_error_"+epgid;
         let tmpcache = this.myCache.get(errorid);
