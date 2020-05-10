@@ -27,7 +27,7 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
     if (cdate === undefined) {
         cache.set('cachetime',ndate);
     } else {
-        if (date >= cdate) {
+        if (date >= ndate) {
             cache.flushAll();
             cache.set('cachetime',ndate);
         }
