@@ -23,10 +23,11 @@ router.get('/live_proxy_epg.php/out_epg', async function (ctx, next) {
 
     let date = new Date();
     let ndate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),0,0,0,0);
-    ndate.setDate(ndate.getDate() + 1);
     if (cdate === undefined) {
         cache.set('cachetime',ndate);
     } else {
+        ndate = cdate;
+        ndate.setDate(ndate.getDate() + 1);
         if (date >= ndate) {
             cache.flushAll();
             cache.set('cachetime',ndate);
