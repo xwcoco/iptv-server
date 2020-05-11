@@ -63,8 +63,27 @@ let getCategoryData = async function (dao, category, alisname, psw) {
         name: alisname,
         psw: psw,
         data: channelArray,
+        favorites: [],
     };
 };
+
+let getFavorityesData = async function(dao,alisname, psw) {
+    let sql = 'select name from chzb_fav order by id';
+    let db = await dao.query(sql);
+    let favorites = [];
+    if (db instanceof Array) {
+        for (let i = 0; i < db.length; i++) {
+            favorites.push(db[i].name)
+        }
+    }
+    return {
+        name : alisname,
+        psw : psw,
+        data : [],
+        favorites : favorites,
+    }
+
+}
 
 router.post('/', async function (ctx, next) {
     let params = ctx.request.body
@@ -79,7 +98,7 @@ router.post('/', async function (ctx, next) {
 
     let contents = [];
 
-    let res = await getCategoryData(dao, '', "我的收藏", '');
+    let res = await getFavorityesData(dao, "我的收藏", '');
 
     contents.push(res);
 
