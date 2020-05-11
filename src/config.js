@@ -4,6 +4,8 @@ const NodeCache = require( "node-cache" );
 const schedule = require('node-schedule');
 let WeatherUtil = require('./WeatherUtil');
 
+let EpgUtil = require("./EpgUtil");
+
 class Config {
     constructor() {
         this.ado = new MysqlDao();
@@ -12,11 +14,39 @@ class Config {
 
         this.myCache = new NodeCache({stdTTL: 0,checkperiod:0});
 
+
+        this._epg = new EpgUtil(this);
+
         this.doGetWeatherSchedule();
+
+        this.checkEPGCache();
+    }
+
+    get epg() {
+        return this._epg;
     }
 
     get cache() {
         return this.myCache;
+    }
+
+    checkEPGCache() {
+        let cdate = this.cache.get('cachetime');
+
+        let date = new Date();
+        let ndate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+        if (cdate === undefined) {
+            this.cache.set('cachetime', ndate);
+            this._epg.doGetAllEPG();
+        } else {
+            ndate = cdate;
+            ndate.setDate(ndate.getDate() + 1);
+            if (date >= ndate) {
+                this.cache.flushAll();
+                this.cache.set('cachetime', ndate);
+                this._epg.doGetAllEPG();
+            }
+        }
     }
 
     doGetWeatherSchedule() {
