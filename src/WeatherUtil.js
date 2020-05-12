@@ -97,7 +97,7 @@ class WeatherUtil {
     }
 
     static getWeatherIcon(type) {
-        console.log(type);
+        // console.log(type);
         let code = "01"
         switch (type) {
             case "晴":
@@ -213,7 +213,7 @@ class WeatherUtil {
                 code = "01"
         }
         let name = "white_"+code+'.png'
-        console.log("code = "+ code);
+        // console.log("code = "+ code);
         return "/weathericon/"+name;
     }
 }

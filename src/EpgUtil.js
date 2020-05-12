@@ -101,9 +101,20 @@ class EpgUtil {
                 }
                 let time = item.$.start;
                 if (time.substr(0, 8) === date.Format('yyyyMMdd')) {
+                    // console.log(item);
+                    let desc = "";
+                    if (item.desc instanceof Array && item.desc.length > 0) {
+                        desc = item.desc[0]._;
+                        if (desc === undefined)
+                            desc = "";
+                        // if (desc !== "")
+                        //     console.log(desc);
+                        // desc = desc.trim();
+                    }
                     let jm = {
                         name: item.title[0.]._,
                         starttime: time.substr(8, 2) + ':' + time.substr(10, 2),
+                        desc : desc,
                     };
                     ret.data.push(jm);
                 }
