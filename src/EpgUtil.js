@@ -23,6 +23,7 @@ class EpgUtil {
         let db = await this.dao.query(sql);
         if (!db instanceof Array) return;
         for (let i = 0; i < db.length; i++) {
+            console.log("deal with epg " + db[i].name);
             let content = db[i].content;
             let plist = JSON.parse(content);
             if (!plist instanceof Array)
@@ -71,7 +72,7 @@ class EpgUtil {
         }
         else if (epgname.startsWith('tvmao-')) {
             this.getTVMAOEPG(epgid,epgname,epgcontent);
-        } else if (tepgname.startsWith('cntv-')) {
+        } else if (epgname.startsWith('cntv-')) {
             this.getCntvEPG(epgid,epgname,epgcontent);
         }
 
@@ -121,9 +122,9 @@ class EpgUtil {
             }
 
         }
-        console.log("51zmt get "+channelName+" epg..." + ret.data.length);
+        // console.log("51zmt get "+channelName+" epg..." + ret.data.length);
         if (ret.data.length === 0) return;
-        console.log("51zmt get "+channelName+" epg...");
+        console.log("51zmt get "+channelName+" epg ok");
         this.cache.set(channelName,ret);
     }
 
@@ -213,7 +214,7 @@ class EpgUtil {
                         if (that.cache.get(channelName) !== undefined)
                             continue;
                         ret.name = channelName;
-                        console.log("tvmao get "+channelName+" epg...");
+                        console.log("tvmao get "+channelName+" epg ok");
                         that.cache.set(channelName,ret);
                     }
 
@@ -269,7 +270,7 @@ class EpgUtil {
                         if (that.cache.get(channelName) !== undefined)
                             continue;
                         ret.name = channelName;
-                        console.log("CNTV get "+channelName+" epg...");
+                        console.log("CNTV get "+channelName+" epg ok");
                         that.cache.set(channelName,ret);
                     }
                 }
