@@ -19,7 +19,7 @@ class EpgUtil {
         console.log("load epg....")
         if (this.loading) return;
         this.loading = true;
-        let sql = "select * from chzb_epg order by id";
+        let sql = "select * from chzb_epg where status = 1 order by id";
         let db = await this.dao.query(sql);
         if (!db instanceof Array) return;
         for (let i = 0; i < db.length; i++) {
@@ -81,8 +81,8 @@ class EpgUtil {
         if (tvid === -1)
             return;
 
-        if (this.cache.get(channelName) !== undefined)
-            return;
+        // if (this.cache.get(channelName) !== undefined)
+        //     return;
 
         let date = new Date();
         let ret = undefined;
@@ -121,7 +121,9 @@ class EpgUtil {
             }
 
         }
+        console.log("51zmt get "+channelName+" epg..." + ret.data.length);
         if (ret.data.length === 0) return;
+        console.log("51zmt get "+channelName+" epg...");
         this.cache.set(channelName,ret);
     }
 
@@ -160,6 +162,7 @@ class EpgUtil {
 
             let url = 'https://m.tvmao.com/api/pg?p=' + keyStr[wday * wday] + Base64.encode(id2[1] + '|' + id1[2]) + Base64.encode('|' + id1[1]);
 
+            // console.log(url);
 
             request(url).then(res => {
                 let tmpstr = res.replaceAll(/<tr[^>]*>/i, "");
@@ -210,6 +213,7 @@ class EpgUtil {
                         if (that.cache.get(channelName) !== undefined)
                             continue;
                         ret.name = channelName;
+                        console.log("tvmao get "+channelName+" epg...");
                         that.cache.set(channelName,ret);
                     }
 
@@ -220,7 +224,8 @@ class EpgUtil {
 
             // return id1;
         }).catch(err => {
-            console.log(err);
+            console.log("tvmao get error..." + jmurl);
+            // console.log(err);
 
         });
 
@@ -264,6 +269,7 @@ class EpgUtil {
                         if (that.cache.get(channelName) !== undefined)
                             continue;
                         ret.name = channelName;
+                        console.log("CNTV get "+channelName+" epg...");
                         that.cache.set(channelName,ret);
                     }
                 }

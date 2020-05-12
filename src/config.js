@@ -19,7 +19,8 @@ class Config {
 
         this.doGetWeatherSchedule();
 
-        this.checkEPGCache();
+        this.doGetEPGSchedule();
+
     }
 
     get epg() {
@@ -55,6 +56,15 @@ class Config {
         schedule.scheduleJob('1 */2 * * *',()=>{
             console.log('doGetWeatherSchedule:' + new Date());
             WeatherUtil.doGetWeatherData(that.myCache);
+        });
+    }
+
+    doGetEPGSchedule() {
+        let that = this;
+        this.checkEPGCache();
+        schedule.scheduleJob('1 8 * * *',() => {
+            console.log('doGetEPGSchedule:' + new Date());
+            that.checkEPGCache();
         });
     }
 
