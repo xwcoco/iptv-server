@@ -12,7 +12,8 @@
   ],
   "nodemonConfig": {
     "ignore": [
-      "node_modules/*"
+      "node_modules/*",
+      "public/upload/*"
     ],
     "delay": "1000",
     "verbose": true
@@ -25,6 +26,7 @@
     "http-proxy-middleware": "^0.20.0",
     "js-base64": "^2.5.2",
     "koa": "^2.8.1",
+    "koa-body": "^4.1.3",
     "koa-bodyparser": "^4.2.1",
     "koa-json": "^2.0.2",
     "koa-router": "^7.4.0",

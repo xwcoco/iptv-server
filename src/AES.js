@@ -25,6 +25,22 @@ class AES {
         console.log(encrypted); // 9FTrAdsYkbHrRsZ1A0IsDw==
         return encrypted;
     }
+
+    decrypt(data) {
+        let key = CryptoJS.enc.Utf8.parse(this.key);
+        let iv = CryptoJS.enc.Utf8.parse(this.iv);
+        let options = {
+            iv: iv,
+            mode: CryptoJS.mode.ECB,
+            // padding: CryptoJS.pad.Pkcs7
+        };
+
+        let encrypted = CryptoJS.AES.decrypt(data, key, options);
+
+        encrypted = encrypted.toString(); // 转换为字符串
+        console.log(encrypted); // 9FTrAdsYkbHrRsZ1A0IsDw==
+        return encrypted;
+    }
 }
 
 module.exports = AES;
