@@ -6,6 +6,8 @@ let WeatherUtil = require('./WeatherUtil');
 
 let EpgUtil = require("./EpgUtil");
 
+let ProxyManager = require("./ProxyManager");
+
 class Config {
     constructor() {
         this.ado = new MysqlDao();
@@ -13,6 +15,8 @@ class Config {
         this._sig = "";
 
         this.myCache = new NodeCache({stdTTL: 0,checkperiod:0});
+
+        this._proxyManager = new ProxyManager();
 
 
         this._epg = new EpgUtil(this);
@@ -29,6 +33,10 @@ class Config {
 
     get cache() {
         return this.myCache;
+    }
+
+    get proxyManager() {
+        return this._proxyManager;
     }
 
     checkEPGCache() {

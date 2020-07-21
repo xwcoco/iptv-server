@@ -121,11 +121,14 @@ router.post('/', async function (ctx, next) {
         // contents.push(res);
     }
 
+    IptvConfig.proxyManager.getAllProxyChannels(ctx.request.origin,contents,channelNumber);
+
     let str = Utils.gzcompress(JSON.stringify(contents));
 
     if (params.rand === "") {
         // ctx.body = Utils.gzcompress("dfsoft123456789");
         ctx.body = str;
+        // ctx.body = contents;
         return true;
     }
 
