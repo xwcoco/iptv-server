@@ -21,7 +21,7 @@
   "author": "xuwei",
   "license": "ISC",
   "dependencies": {
-    "async": "^3.1.0",
+    "async": "^3.2.2",
     "crypto-js": "^4.0.0",
     "http-proxy-middleware": "^0.20.0",
     "js-base64": "^2.5.2",
